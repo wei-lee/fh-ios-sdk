@@ -731,7 +731,8 @@ static NSString *const kUIDMapping = @"uidMapping";
     if (nil != deleted) {
         [deleted enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             NSMutableArray* history = self.changeHistory[key];
-            if(history) {
+            FHSyncPendingDataRecord* pendingRecord = self.pendingDataRecords[key];
+            if(history && [pendingRecord.action isEqualToString:@"create"]) {
                 DLog(@"ignore delete with key %@ as it's outdated", key);
             } else {
                 [self.dataRecords removeObjectForKey:key];
