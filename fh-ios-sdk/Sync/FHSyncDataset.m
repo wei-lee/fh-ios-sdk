@@ -316,7 +316,7 @@ static NSString *const kUIDMapping = @"uidMapping";
     [self saveToFile:nil];
     [FHSyncUtils doNotifyWithDataId:self.datasetId
                              config:self.syncConfig
-                                uid:obj.uid
+                                   uid:obj.uid
                                code:LOCAL_UPDATE_APPLIED_MESSAGE
                             message:obj.action];
 }
@@ -465,7 +465,7 @@ static NSString *const kUIDMapping = @"uidMapping";
     self.syncLoopStart = [NSDate date];
     [FHSyncUtils doNotifyWithDataId:self.datasetId
                              config:self.syncConfig
-                                uid:NULL
+                                uid:NULL   
                                code:SYNC_STARTED_MESSAGE
                             message:NULL];
     if (![FH isOnline]) {
@@ -730,9 +730,10 @@ static NSString *const kUIDMapping = @"uidMapping";
     NSDictionary *deleted = resData[@"delete"];
     if (nil != deleted) {
         [deleted enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-            NSMutableArray* history = [self.changeHistory objectForKey:key];
-            if(history && [history containsObject:obj[@"hash"]]){
-                DLog(@"ignore delete with hash %@ as it's outdated", obj[@"hash"]);
+            NSMutableArray* history = self.changeHistory[key];
+            FHSyncPendingDataRecord* pendingRecord = self.pendingDataRecords[key];
+            if(history && [pendingRecord.action isEqualToString:@"create"]) {
+                DLog(@"ignore delete with key %@ as it's outdated", key);
             } else {
                 [self.dataRecords removeObjectForKey:key];
                 [FHSyncUtils doNotifyWithDataId:self.datasetId
