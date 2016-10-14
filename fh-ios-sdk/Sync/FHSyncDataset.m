@@ -416,6 +416,7 @@ static NSString *const kUIDMapping = @"uidMapping";
     NSMutableArray* historyForRecord = [self.changeHistory objectForKey:uid];
     if (!historyForRecord) {
       historyForRecord = [NSMutableArray array];
+      self.changeHistory = [NSMutableDictionary dictionary];
       self.changeHistory[uid] = historyForRecord;
     }
     if (![historyForRecord containsObject:postHash]) {
